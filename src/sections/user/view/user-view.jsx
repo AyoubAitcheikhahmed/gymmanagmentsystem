@@ -1,5 +1,10 @@
 import { useState } from 'react';
 
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
@@ -91,17 +96,51 @@ export default function UserPage() {
     comparator: getComparator(order, orderBy),
     filterName,
   });
+  const [openNewUser, setOpenNewUser] = useState(false);
 
-  const notFound = !dataFiltered.length && !!filterName;
+  const handleOpenNewUser = () => setOpenNewUser(true);
+  const handleCloseNewUser = () => setOpenNewUser(false);
+  
 
   return (
     <Container>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Users</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          New User
-        </Button>
+        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleOpenNewUser}>
+  New User
+</Button>
+<Modal
+  open={openNewUser}
+  onClose={handleCloseNewUser}
+  aria-labelledby="new-user-modal-title"
+  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} // Centering the modal
+>
+  <Box 
+    sx={{ 
+      backgroundColor: 'background.paper',
+      opacity: 0.9, 
+      padding: 3, 
+      borderRadius: 2,
+      boxShadow: 24,
+      width: 400, 
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2, 
+    }}>
+      <Typography id="new-user-modal-title" variant="h6" component="h2">
+        New User
+      </Typography>
+        <FormControl >
+          <TextField sx={{marginBottom:3}} label="First Name" variant="outlined" />
+          <TextField sx={{marginBottom:3}}label="Last Name" variant="outlined" />
+          <TextField sx={{marginBottom:3}} label="Phone Number" variant="outlined" />
+          <Button >Submit</Button>
+        </FormControl>
+  </Box>
+</Modal>
+
+
       </Stack>
 
       <Card>
@@ -122,11 +161,11 @@ export default function UserPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'lastName', label: 'Last Name' },
+                  { id: 'firstName', label: 'First Name' },
+                  { id: 'activity', label: 'Activity' },
+                  { id: 'contact', label: 'Contact', align: 'center' },
+                  { id: 'membership', label: 'Membership' },
                   { id: '' },
                 ]}
               />
@@ -136,12 +175,10 @@ export default function UserPage() {
                   .map((row) => (
                     <UserTableRow
                       key={row.id}
-                      name={row.name}
-                      role={row.role}
+                      lastName={row.lastName}
+                      firstName={row.firstName}
+                      activity={row.activity}
                       status={row.status}
-                      company={row.company}
-                      avatarUrl={row.avatarUrl}
-                      isVerified={row.isVerified}
                       selected={selected.indexOf(row.name) !== -1}
                       handleClick={(event) => handleClick(event, row.name)}
                     />
@@ -152,7 +189,6 @@ export default function UserPage() {
                   emptyRows={emptyRows(page, rowsPerPage, users.length)}
                 />
 
-                {notFound && <TableNoData query={filterName} />}
               </TableBody>
             </Table>
           </TableContainer>
